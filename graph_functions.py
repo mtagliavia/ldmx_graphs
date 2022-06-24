@@ -2,6 +2,8 @@
 These are the functions needed to graph the 2D scatterplot of binned medians for hit energies and hit positions
 '''
 
+import matplotlib.pyplot as plt
+import numpy as np
 
 def calc_bins(a1, a2, nbins=15):
     '''
