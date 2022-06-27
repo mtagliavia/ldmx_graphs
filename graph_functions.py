@@ -180,3 +180,4 @@ def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8, loc='bes
                      marker='o', ms=ms, lw=0, elinewidth=2, color=colors[i])
         
     plt.legend(loc=loc)
+    plt.show()

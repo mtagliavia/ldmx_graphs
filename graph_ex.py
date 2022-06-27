@@ -15,9 +15,9 @@ zcoords1      = dict_1GeV['zcoords']
 rechitenergy1 = dict_1GeV['rechitenergy']
 
 dict_2GeV = pickle.load(open('./100k_2GeV.pkl', 'rb'))
-xcoords2      = dict_1GeV['xcoords']
-zcoords2      = dict_1GeV['zcoords']
-rechitenergy2 = dict_1GeV['rechitenergy']
+xcoords2      = dict_2GeV['xcoords']
+zcoords2      = dict_2GeV['zcoords']
+rechitenergy2 = dict_2GeV['rechitenergy']
 
 
 
@@ -47,15 +47,15 @@ med2, qlow2, qhigh2 = ms_and_qs(xenergy2, bins)
 
 
 # put these returned 2D arrays into single 3D arrays for graphing purposes
-meds = np.zeros((2, m1.shape[0], 2), dtype='float')
+meds = np.zeros((2, med1.shape[0], 2), dtype='float')
 meds[0] = med1
 meds[1] = med2
 
-qlows = np.zeros((2, m1.shape[0], 2), dtype='float')
+qlows = np.zeros((2, med1.shape[0], 2), dtype='float')
 qlows[0] = qlow1
 qlows[1] = qlow2
 
-qhighs = np.zeros((2, m1.shape[0], 2), dtype='float')
+qhighs = np.zeros((2, med1.shape[0], 2), dtype='float')
 qhighs[0] = qhigh1
 qhighs[1] = qhigh2
 
