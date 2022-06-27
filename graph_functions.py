@@ -124,7 +124,7 @@ def ms_and_qs(xy, bins, low=0.16, high=0.84):
             q_low[i,1] = medians[i,1] - np.quantile(zz1, low)
             q_high[i,1] = np.quantile(zz1, high) - medians[i,1]
 
-            if i==(nbins-1):
+            if i==(nb-1):
                 z1 = xy[:,0][xy[:,0]>=bins[i]]
                 ez1 = xy[:,1][xy[:,0]>=bins[i]]
 
