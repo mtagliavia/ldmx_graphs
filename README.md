@@ -1,4 +1,4 @@
-# neut_graphs
+# ldmx_graphs
 
 I made this repository so that others would not have to start from scratch when creating graphs that analyze simulation data produced by ldmx-sw. 
 
@@ -21,3 +21,7 @@ The process is as follows:
     3) Graph these medians and quantiles from both of these data sets concurrently.
     
 Analyzing the graph produced by this example shows that, as expected, the 2 GeV neutrons have overall higher hit energies than the 1 GeV neutrons. This trend is especially strong in the core of the distribution, where there are higher quantities of hits.
+
+### analysis_funcs.py
+
+This file contains all of my functions that I use for graphing and understanding the simulation data. Along with the functions in graph_functions.py, it includes histogramming and scatterplot functions as well as a function that prints out important statistics about a distribution.
