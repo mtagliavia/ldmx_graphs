@@ -193,12 +193,6 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
         print('Number of elements with this minimum: {}'.format(x[x==x.min()].size))
         print('10th percentile of distribution: {}'.format(np.quantile(x, 0.1)))
         print()
-        if minlim!=None:
-            print('Number of elements below {}: {}'.format(minlim,
-                                                            x[x<minlim].size))
-            print('Array of elements below {}: {}'.format(minlim,
-                                                np.sort(x[x<minlim])[::-1]))
-            print()
         if nextlowest!=0:
             xcp = copy.deepcopy(x)
             xcp = np.where(xcp==xcp.min(), xcp.max(), xcp)
@@ -207,6 +201,12 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
                 print('Number of elements with this value: {}'.format(xcp[xcp==xcp.min()].size))
                 print()
                 xcp = np.where(xcp==xcp.min(), xcp.max(), xcp)
+        if minlim!=None:
+            print('Number of elements below {}: {}'.format(minlim,
+                                                            x[x<minlim].size))
+            print('Array of elements below {}: {}'.format(minlim,
+                                                np.sort(x[x<minlim])[::-1]))
+            print()
         print()
             
     if maxs==True:
@@ -214,12 +214,6 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
         print('Number of elements with this maximum: {}'.format(x[x==x.max()].size))
         print('90th percentile of distribution: {}'.format(np.quantile(x, 0.9)))
         print()
-        if maxlim!=None:
-            print('Number of elements above {}: {}'.format(maxlim,
-                                                            x[x>maxlim].size))
-            print('Array of elements above {}: {}'.format(maxlim,
-                                                        np.sort(x[x>maxlim])))
-            print()
         if nexthighest!=0:
             xcp = copy.deepcopy(x)
             xcp = np.where(xcp==xcp.max(), xcp.min(), xcp)
@@ -228,6 +222,12 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
                 print('Number of elements with this value: {}'.format(xcp[xcp==xcp.max()].size))
                 print()
                 xcp = np.where(xcp==xcp.max(), xcp.min(), xcp)
+        if maxlim!=None:
+            print('Number of elements above {}: {}'.format(maxlim,
+                                                            x[x>maxlim].size))
+            print('Array of elements above {}: {}'.format(maxlim,
+                                                        np.sort(x[x>maxlim])))
+            print()
         print()
     
     
@@ -235,7 +235,7 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
     
 '''
 These are the functions needed to graph the 2D scatterplot of binned medians
-for hit energies and hit positions.
+for hit energies and hit positions (also in graph_functions.py).
 '''
 
 def calc_bins(a1, a2, nbins=15):
