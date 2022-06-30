@@ -218,7 +218,7 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
             xcp = copy.deepcopy(x)
             xcp = np.where(xcp==xcp.max(), xcp.min(), xcp)
             for i in range(nexthighest):
-                print('Next lowest value is: {}'.format(xcp.max()))  #HERE
+                print('Next highest value is: {}'.format(xcp.max()))  #HERE
                 print('Number of elements with this value: {}'.format(xcp[xcp==xcp.max()].size))
                 print()
                 xcp = np.where(xcp==xcp.max(), xcp.min(), xcp)
