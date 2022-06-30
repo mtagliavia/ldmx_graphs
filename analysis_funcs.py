@@ -11,7 +11,7 @@ import numpy as np
 
 
 def hist1(x, title, label, size=(10,10), nbins=25, xlabel=None, ylabel=None,
-                            xlim=(None,None), yscale='linear', loc='best'):
+                    xlim=(None,None), yscale='linear', loc='best', fs=20):
     '''
     This function produces a 1D histogram of the input data.
     
@@ -29,6 +29,7 @@ def hist1(x, title, label, size=(10,10), nbins=25, xlabel=None, ylabel=None,
         - yscale (str) : how to scale the values in each bin
         - loc (str/int): location of the graph legend; 1 is upper right, 5 is
                          middle right, 9 is top middle
+        - fs (int)     : font size of legend
         
     Returns:
         - an mplhep histogram plot
@@ -39,13 +40,14 @@ def hist1(x, title, label, size=(10,10), nbins=25, xlabel=None, ylabel=None,
     hep.histplot(h, bins, label=label)
     plt.xlim(xlim)
     plt.yscale(yscale)
-    plt.legend(loc=loc)
+    plt.legend(loc=loc, fontsize=fs)
     plt.show()
     
     
     
 def scatter1(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
-            xlim=(None,None), ylim=(None,None), yscale='linear', loc='best'):
+            xlim=(None,None), ylim=(None,None), yscale='linear', loc='best',
+            fs=18):
     '''
     This function produces a 2D scatterplot of the input data.
     
@@ -65,6 +67,7 @@ def scatter1(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
         - yscale (str) : how to scale the values in each bin
         - loc (str/int): location of the graph legend; 1 is upper right, 5 is
                          middle right, 9 is top middle
+        - fs (int)     : font size of legend
         
     Returns:
         - a matplotlib.pyplot scatterplot
@@ -77,13 +80,14 @@ def scatter1(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
     plt.xlim(xlim)
     plt.ylim(ylim)
     plt.yscale(yscale)
-    plt.legend(loc=loc)
+    plt.legend(loc=loc, fontsize=fs)
     plt.show()
     
     
     
 def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
-    xlabel=None, ylabel=None, xlim=(None,None), yscale='linear', loc='best'):
+    xlabel=None, ylabel=None, xlim=(None,None), yscale='linear', loc='best',
+    fs=20):
     '''
     This function graphs many histograms on the same plot.
     
@@ -108,6 +112,7 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
         - yscale (str)       : how to scale the values in each bin
         - loc (str/int)      : location of the graph legend; 1 is upper right,
                                5 is middle right, 9 is top middle
+        - fs (int)           : font size of legend
         
     Returns:
         - a matplotlib.pyplot graph of many histograms
@@ -137,12 +142,12 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
         h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=a[i],
         color=cs[i])
     
-    plt.title(title, size=20)
-    plt.xlabel(xlabel, size=18)
-    plt.ylabel(ylabel, size=18)
+    plt.title(title, size=24)
+    plt.xlabel(xlabel, size=20)
+    plt.ylabel(ylabel, size=20)
     plt.xlim(xlim)
     plt.yscale(yscale)
-    plt.legend(loc=loc)
+    plt.legend(loc=loc, fontsize=fs)
     plt.show()
     
     
@@ -243,11 +248,12 @@ def calc_bins(a1, a2, nbins=15):
     Returns the bins to be used in the 2D scatterplot
     
     Inputs:
-        - a1 (numpy array): coordinate array for first neutron energy
-                            (e.g. 1 GeV)
-        - a2 (numpy array): coordinate array for second neutron energy
-                            (e.g. 2 GeV)
-        - nbins (int): starting number of desired bins
+        - a1 (numpy array)    : coordinate array for first neutron energy
+                                (e.g. 1 GeV)
+        - a2 (numpy array)    : coordinate array for second neutron energy
+                                (e.g. 2 GeV)
+    Kwargs:
+        - nbins (int)         : starting number of desired bins
         
     Outputs:
         - (bins) (numpy array): array of bins to be used in histogram
@@ -298,6 +304,7 @@ def ms_and_qs(xy, bins, low=0.16, high=0.84):
         - xy (numpy array)     : aformentioned 2D array
         - bins (numpy array)   : output from calc_bins function, the binning
                                  to be used in the future histogram
+    Kwargs:
         - low (float in [0,1]) : lower percentile for quantile range
         - high (float in [0,1]): higher percentile for quantile range
                               
@@ -379,7 +386,7 @@ def ms_and_qs(xy, bins, low=0.16, high=0.84):
 
 
 def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8,
-                                                                loc='best'):
+                                                    loc='best', fonts=20):
     '''
     Graphs the medians and quantiles as returned from the function
     ms_and_qs
@@ -387,14 +394,20 @@ def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8,
     Inputs:
         - medians (numpy array): 3D array where each 2D slice
                                  is the first output from ms_and_qs
-        - q_lows (numpy array): 3D array where each 2D slice
-                                is the second output from ms_and_qs
+        - q_lows (numpy array) : 3D array where each 2D slice
+                                 is the second output from ms_and_qs
         - q_highs (numpy array): 3D array where each 2D slice
                                  is the third output from ms_and_qs
-        - coord (str): name of the coordinate under analysis; takes
-                       values of 'x', 'y', 'z'
-        - energies (list): contains energies of the fired neutrons
-                           for each 2D array slice
+        - coord (str)          : name of the coordinate under analysis;
+                                 takes values of 'x', 'y', 'z'
+        - energies (list)      : contains energies of the fired neutrons
+                                 for each 2D array slice
+    Kwargs:
+        - fs (int)             : size of graph (shape will always be square)
+        - ms (int)             : size of data points
+        - loc (str/int)        : location of the graph legend; 1 is upper
+                                 right, 5 is middle right, 9 is top middle
+        - fonts (int)          : font size of legend
                        
     Outputs:
         - matplotlib scatterplot of median positions and energies,
@@ -419,7 +432,7 @@ def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8,
                      yerr=q_highs[i,:,1], lolims=True, xlolims=True,
                      marker='o', ms=ms, lw=0, elinewidth=2, color=colors[i])
         
-    plt.legend(loc=loc)
+    plt.legend(loc=loc, fontsize=fonts)
     plt.show()
 
     
