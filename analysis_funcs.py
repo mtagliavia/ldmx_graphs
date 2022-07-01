@@ -237,6 +237,48 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
     
     
     
+def calc_bins_multi(alist, nbins=15):
+    '''
+    Returns the bins to be used in a histogram or profile plot
+    
+    Inputs:
+        - alist (list) : 2D list where each element is a 1D distribution
+    Kwargs:
+        - nbins (int)  : starting number of desired bins
+        
+    Returns:
+        - (numpy array): array of bins to be used in histogram or profile
+                         plot
+    '''
+    bins = np.zeros((len(alist), nbins), dtype='float')
+    
+    for i in range(len(alist)):
+        h, bins[i] = np.histogram(alist[i], bins=nbins)
+        
+#    for i in range(bins.shape[0]):
+#        if bins[i,0]==bins[:,0].min() and bins[i,-1]==bins[:,-1].max():
+#            return bins[i]
+            
+    bmin = np.where(bins==bins.min())
+    bmax = np.where(bins==bins.max())
+    imin = bmin[0,0]
+    imax = bmax[0,0]
+    
+    if imin==imax:
+        return bins[imin]
+    
+    rbins = bins[imin]
+    rbins_list = list(rbins)
+    
+    while rbins_list[-1] < bins.max():
+        diff = rbins_list[-1] + rbins[1]-rbins[0]
+        rbins_list.append(diff)
+        
+    rbins_array = np.array(rbins_list)
+    return rbins_array
+    
+    
+    
     
 '''
 These are the functions needed to graph the 2D scatterplot of binned medians
@@ -286,7 +328,7 @@ def calc_bins(a1, a2, nbins=15):
         bins2_list = list(bins2)
         
         while bins2_list[-1]<bins1[-1]:
-            diff = bins2_list[-1] + (bins2[1]-bins1[0])
+            diff = bins2_list[-1] + (bins2[1]-bins2[0])
             bins2_list.append(diff)
             
         bins2_array = np.array(bins2_list)
