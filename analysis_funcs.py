@@ -82,7 +82,50 @@ def scatter1(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
     plt.yscale(yscale)
     plt.legend(loc=loc, fontsize=fs)
     plt.show()
+
+
+
+def scatter_multi(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
+            xlim=(None,None), ylim=(None,None), yscale='linear', loc='best',
+            fs=18):
+    '''
+    This function produces a 2D scatterplot of the input data.
     
+    Inputs:
+        - x (list)     : contains 1D numpy arrays that contain the horizontal
+                         coordinates
+        - y (list)     : contains 1D numpy arrays that contain the vertical
+                         coordinates
+        - title (str)  : title of graph
+        - xlabel (str) : x-axis label
+        - ylabel (str) : y-axis label
+        - label (list) : description of particles fired; appears in graph
+                         legend
+    Kwargs:
+        - size (tuple) : figure size of graph produced
+        - s (float)    : size of points graphed
+        - xlim (tuple) : range of x-values to display in the graph
+        - ylim (tuple) : range of y-values to display in the graph
+        - yscale (str) : how to scale the values in each bin
+        - loc (str/int): location of the graph legend; 1 is upper right, 5 is
+                         middle right, 9 is top middle
+        - fs (int)     : font size of legend
+        
+    Returns:
+        - a matplotlib.pyplot scatterplot
+    '''
+    plt.figure(figsize=size)
+    for i in len(x):
+        plt.scatter(x[i], y[i], s=s, label=label[i])
+    plt.title(title, size=20)
+    plt.xlabel(xlabel, size=18)
+    plt.ylabel(ylabel, size=18)
+    plt.xlim(xlim)
+    plt.ylim(ylim)
+    plt.yscale(yscale)
+    plt.legend(loc=loc, fontsize=fs)
+    plt.show()
+
     
     
 def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
@@ -250,7 +293,7 @@ def calc_bins_multi(alist, nbins=15):
         - (numpy array): array of bins to be used in histogram or profile
                          plot
     '''
-    bins = np.zeros((len(alist), nbins), dtype='float')
+    bins = np.zeros((len(alist), nbins+1), dtype='float')
     
     for i in range(len(alist)):
         h, bins[i] = np.histogram(alist[i], bins=nbins)
@@ -261,8 +304,8 @@ def calc_bins_multi(alist, nbins=15):
             
     bmin = np.where(bins==bins.min())
     bmax = np.where(bins==bins.max())
-    imin = bmin[0,0]
-    imax = bmax[0,0]
+    imin = bmin[0][0]
+    imax = bmax[0][0]
     
     if imin==imax:
         return bins[imin]
