@@ -471,7 +471,7 @@ def ms_and_qs(xy, bins, low=0.16, high=0.84):
 
 
 def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8,
-                                                    loc='best', fonts=20):
+                                    loc='best', fonts=20, colors=None):
     '''
     Graphs the medians and quantiles as returned from the function
     ms_and_qs
@@ -493,6 +493,8 @@ def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8,
         - loc (str/int)        : location of the graph legend; 1 is upper
                                  right, 5 is middle right, 9 is top middle
         - fonts (int)          : font size of legend
+        - colors (list)        : color of points and error bars for a
+                                 particular dataset
                        
     Outputs:
         - matplotlib scatterplot of median positions and energies,
@@ -500,8 +502,13 @@ def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8,
           bin
     '''
     
-    colors = plt.cm.Set1(np.linspace(0, 1, medians.shape[0]))  # change the
-                                                # color scheme here if you like
+    if colors != None:
+        cs = colors
+    else:
+        cs = plt.cm.Set1(np.linspace(0, 1, medians.shape[0]))
+    
+#    colors = plt.cm.Set1(np.linspace(0, 1, medians.shape[0]))  # change the
+#                                                # color scheme here if you like
     
     plt.figure(figsize=(fs,fs))
     plt.title('Median Hit Energy vs Median {}-Coordinates'.format(coord.upper()))
@@ -512,10 +519,10 @@ def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8,
         plt.errorbar(medians[i,:,0], medians[i,:,1], xerr=q_lows[i,:,0],
                      yerr=q_lows[i,:,1], uplims=True, xuplims=True,
                      marker='o', ms=ms, label='{} GeV'.format(energies[i]),
-                     lw=0, elinewidth=2, color=colors[i])
+                     lw=0, elinewidth=2, color=cs[i])
         plt.errorbar(medians[i,:,0], medians[i,:,1], xerr=q_highs[i,:,0],
                      yerr=q_highs[i,:,1], lolims=True, xlolims=True,
-                     marker='o', ms=ms, lw=0, elinewidth=2, color=colors[i])
+                     marker='o', ms=ms, lw=0, elinewidth=2, color=cs[i])
         
     plt.legend(loc=loc, fontsize=fonts)
     plt.show()
