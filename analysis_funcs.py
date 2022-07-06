@@ -86,10 +86,11 @@ def scatter1(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
 
 
 def scatter_multi(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
-            xlim=(None,None), ylim=(None,None), yscale='linear', loc='best',
-            fs=18):
+                  xlim=(None,None), ylim=(None,None), yscale='linear',
+                  loc='best', fs=18, colors=None):
     '''
-    This function produces a 2D scatterplot of the input data.
+    This function produces a 2D scatterplot of input data from multiple
+    datasets.
     
     Inputs:
         - x (list)     : contains 1D numpy arrays that contain the horizontal
@@ -110,13 +111,19 @@ def scatter_multi(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
         - loc (str/int): location of the graph legend; 1 is upper right, 5 is
                          middle right, 9 is top middle
         - fs (int)     : font size of legend
+        - colors (list): colors of datasets in plot
         
     Returns:
         - a matplotlib.pyplot scatterplot
     '''
+    if colors != None:
+        cs = colors
+    else:
+        cs = plt.cm.Set1(np.linspace(0, 1, len(x)))
+        
     plt.figure(figsize=size)
-    for i in len(x):
-        plt.scatter(x[i], y[i], s=s, label=label[i])
+    for i in range(len(x)):
+        plt.scatter(x[i], y[i], s=s, label=label[i], color=cs[i])
     plt.title(title, size=20)
     plt.xlabel(xlabel, size=18)
     plt.ylabel(ylabel, size=18)
