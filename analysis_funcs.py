@@ -36,7 +36,10 @@ def hist1(x, title, label, size=(10,10), nbins=25, xlabel=None, ylabel=None,
     '''
     plt.figure(figsize=size)
     h, bins = np.histogram(x, bins=nbins)
-    xxx = plt.axes(xlabel=xlabel, ylabel=ylabel, title=title)
+#    xxx = plt.axes(xlabel=xlabel, ylabel=ylabel, title=title)
+    plt.title(title, size=20)
+    plt.xlabel(xlabel, size=18)
+    plt.ylabel(ylabel, size=18)
     hep.histplot(h, bins, label=label)
     plt.xlim(xlim)
     plt.yscale(yscale)
@@ -590,9 +593,9 @@ def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8,
 #                                                # color scheme here if you like
     
     plt.figure(figsize=(fs,fs))
-    plt.title('Median Hit Energy vs Median {}-Coordinates'.format(coord.upper()))
-    plt.xlabel('median {}-coordinates of hit (mm)'.format(coord))
-    plt.ylabel('median energy of hit (MeV)')
+    plt.title('Median Hit Energy vs Median {}-Coordinates'.format(coord.upper()), size=20)
+    plt.xlabel('median {}-coordinates of hit (mm)'.format(coord), size=18)
+    plt.ylabel('median energy of hit (MeV)', size=18)
     
     for i in range(medians.shape[0]):
         plt.errorbar(medians[i,:,0], medians[i,:,1], xerr=q_lows[i,:,0],
