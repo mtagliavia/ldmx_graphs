@@ -11,7 +11,7 @@ import numpy as np
 
 
 def hist1(x, title, label, size=(10,10), nbins=25, xlabel=None, ylabel=None,
-                    xlim=(None,None), yscale='linear', loc='best', fs=20):
+          xlim=(None,None), yscale='linear', loc='best', fs=20):
     '''
     This function produces a 1D histogram of the input data.
     
@@ -46,8 +46,8 @@ def hist1(x, title, label, size=(10,10), nbins=25, xlabel=None, ylabel=None,
     
     
 def scatter1(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
-            xlim=(None,None), ylim=(None,None), yscale='linear', loc='best',
-            fs=18):
+             xlim=(None,None), ylim=(None,None), yscale='linear', loc='best',
+             fs=18):
     '''
     This function produces a 2D scatterplot of the input data.
     
@@ -136,8 +136,8 @@ def scatter_multi(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
     
     
 def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
-    xlabel=None, ylabel=None, xlim=(None,None), yscale='linear', loc='best',
-    fs=20):
+          edge=True, xlabel=None, ylabel=None, xlim=(None,None),
+          yscale='linear', loc='best', fs=20, cumulative=0):
     '''
     This function graphs many histograms on the same plot.
     
@@ -156,6 +156,7 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
                                each individual histogram
         - colors (array)     : color of each histogram; can 'customize' for
                                each individual histogram
+        - edge (bool)        : whether to graph edges or fill histogram bins
         - xlabel (str)       : x-axis label
         - ylabel (str)       : y-axis label
         - xlim (tuple)       : range of x-values to display in the graph
@@ -163,6 +164,8 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
         - loc (str/int)      : location of the graph legend; 1 is upper right,
                                5 is middle right, 9 is top middle
         - fs (int)           : font size of legend
+        - cumulative (int)   : set equal to 1/-1 to graph integral/1-integral
+                               of graph
         
     Returns:
         - a matplotlib.pyplot graph of many histograms
@@ -188,9 +191,74 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
     
     plt.figure(figsize=size)
     
-    for i in range(len(xs)):
-        h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=a[i],
-        color=cs[i])
+    if edge==True:
+        hmin = np.zeros((len(xs), nb[0].size), dtype='float')
+        hmax = np.zeros((len(xs), nb[0].size), dtype='float')
+        for i in range(len(xs)):
+            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=1,
+                         edgecolor=cs[i], linewidth=2, fill=False,
+                         cumulative=cumulative)
+            plt.vlines(nb[i], 0, h[0].max(), colors='white', alpha=1, linewidth=2)
+            h_list_left = list(h[0])
+            h_list_left.append(0)
+            h_list_right = list(h[0][::-1])
+            h_list_right.append(0)
+            hl = np.array(h_list_left)
+            hr = np.array(h_list_right)[::-1]
+            for j in range(hmin[0].size):
+                hmin[i][j] = min(hl[j], hr[j])
+                hmax[i][j] = max(hl[j], hr[j])
+        for k in range(len(xs)):
+            plt.vlines(nb[k], hmin[k], hmax[k], colors=cs[k], alpha=1, linewidth=2)
+                
+#        for i in range(len(xs)):
+#            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=1,
+#                         edgecolor=cs[i], linewidth=2, fill=False,
+#                         cumulative=cumulative)
+#            h_list_left = list(h[0])
+#            h_list_left.append(0)
+#            h_list_right = list(h[0][::-1])
+#            h_list_right.append(0)
+#            hl = np.array(h_list_left)
+#            hr = np.array(h_list_right)[::-1]
+#            hh = np.zeros(hl.size, dtype='float')
+#            for j in range(hh.size):
+#                hh[j] = min(hl[j], hr[j])
+#            plt.vlines(nb[i], 0, hh, colors='white', alpha=1, linewidth=2)
+    else:
+        for i in range(len(xs)):
+            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=a[i],
+                         color=cs[i], fill=True, cumulative=cumulative)
+                         
+                         
+#    for i in range(len(xs)):
+#        if edge==True:
+##            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=1,
+##                         edgecolor=cs[i], linewidth=2, fill=False,
+##                         cumulative=cumulative)
+##            hlist = list(h[0])
+##            hlist.append(0)
+##            h = np.array(hlist)
+##            print(h, h.size, type(h), type(h[0]))
+##            print()
+##            plt.vlines(nb[i], 0, h, colors='white', alpha=1, linewidth=2)
+#
+#            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=1,
+#                         edgecolor=cs[i], linewidth=2, fill=False,
+#                         cumulative=cumulative)
+#            h_list_left = list(h[0])
+#            h_list_left.append(0)
+#            h_list_right = list(h[0][::-1])
+#            h_list_right.append(0)
+#            hl = np.array(h_list_left)
+#            hr = np.array(h_list_right)[::-1]
+#            hh = np.zeros(hl.size, dtype='float')
+#            for j in range(hh.size):
+#                hh[j] = min(hl[j], hr[j])
+#            plt.vlines(nb[i], 0, hh, colors='white', alpha=1, linewidth=2)
+#        else:
+#            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=a[i],
+#                         color=cs[i], fill=True, cumulative=cumulative)
     
     plt.title(title, size=24)
     plt.xlabel(xlabel, size=20)
@@ -240,6 +308,8 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
         
     if misc==True:
         print('Length: {}'.format(x.size))
+        print('Median: {}'.format(np.median(x)))
+        print('Standard deviation: {}'.format(np.std(x)))
         print()
         print()
         
@@ -259,6 +329,7 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
         if minlim!=None:
             print('Number of elements below {}: {}'.format(minlim,
                                                             x[x<minlim].size))
+            print('Corresponding percentile: {}'.format(x[x<minlim].size / x.size))
             print('Array of elements below {}: {}'.format(minlim,
                                                 np.sort(x[x<minlim])[::-1]))
             print()
@@ -280,6 +351,7 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
         if maxlim!=None:
             print('Number of elements above {}: {}'.format(maxlim,
                                                             x[x>maxlim].size))
+            print('Corresponding percentile: {}'.format(x[x<maxlim].size / x.size))
             print('Array of elements above {}: {}'.format(maxlim,
                                                         np.sort(x[x>maxlim])))
             print()
