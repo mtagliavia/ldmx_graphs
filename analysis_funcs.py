@@ -183,7 +183,10 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
         nb = nbins
         
     if type(alpha)==float:
-        a = np.ones(len(xs))*alpha
+        if edge==True:
+            a = np.ones(len(xs))
+        else:
+            a = np.ones(len(xs))*alpha
     else:
         a = alpha
         
@@ -198,7 +201,7 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
         hmin = np.zeros((len(xs), nb[0].size), dtype='float')
         hmax = np.zeros((len(xs), nb[0].size), dtype='float')
         for i in range(len(xs)):
-            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=1,
+            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=a[i],
                          edgecolor=cs[i], linewidth=2, fill=False,
                          cumulative=cumulative)
             plt.vlines(nb[i], 0, h[0].max(), colors='white', alpha=1, linewidth=2)
@@ -212,7 +215,7 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
                 hmin[i][j] = min(hl[j], hr[j])
                 hmax[i][j] = max(hl[j], hr[j])
         for k in range(len(xs)):
-            plt.vlines(nb[k], hmin[k], hmax[k], colors=cs[k], alpha=1, linewidth=2)
+            plt.vlines(nb[k], hmin[k], hmax[k], colors=cs[k], alpha=a[i], linewidth=2)
                 
 #        for i in range(len(xs)):
 #            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=1,
@@ -333,7 +336,8 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
             print('Number of elements below {}: {}'.format(minlim,
                                                             x[x<minlim].size))
             print('Corresponding percentile: {}'.format(x[x<minlim].size / x.size))
-            print('Array of elements below {}: {}'.format(minlim,
+            if x[x<minlim].size <= 75:
+                print('Array of elements below {}: {}'.format(minlim,
                                                 np.sort(x[x<minlim])[::-1]))
             print()
         print()
@@ -355,7 +359,8 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
             print('Number of elements above {}: {}'.format(maxlim,
                                                             x[x>maxlim].size))
             print('Corresponding percentile: {}'.format(x[x<maxlim].size / x.size))
-            print('Array of elements above {}: {}'.format(maxlim,
+            if x[x<maxlim].size <= 75:
+                print('Array of elements above {}: {}'.format(maxlim,
                                                         np.sort(x[x>maxlim])))
             print()
         print()
@@ -478,10 +483,10 @@ def ms_and_qs(xy, bins, low=0.16, high=0.84):
     Outputs:
         - medians (numpy array): 2D array containing bin medians of
                                  coordinates and energies
-        - q_low (numpy array)  : 2D array containing 16th quartile value of
+        - q_low (numpy array)  : 2D array containing the low quartile value of
                                  coordinates and energies
-        - q_high (numpy array) : 2D array containing 84th quartile value of
-                                 coordinates and energies
+        - q_high (numpy array) : 2D array containing the high quartile value
+                                 of coordinates and energies
     '''
     
     nb = bins.size
@@ -550,10 +555,11 @@ def ms_and_qs(xy, bins, low=0.16, high=0.84):
                 
     return medians, q_low, q_high
 
+    
 
-
-def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8,
-                                    loc='best', fonts=20, colors=None):
+def ms_qs_graph(medians, q_lows, q_highs, labels, coord=None, title=None,
+                xlabel=None, ylabel=None, fs=12, ms=8, loc='best', fonts=20,
+                colors=None):
     '''
     Graphs the medians and quantiles as returned from the function
     ms_and_qs
@@ -565,14 +571,17 @@ def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8,
                                  is the second output from ms_and_qs
         - q_highs (numpy array): 3D array where each 2D slice
                                  is the third output from ms_and_qs
-        - coord (str)          : name of the coordinate under analysis;
-                                 takes values of 'x', 'y', 'z'
-        - energies (list)      : contains energies of the fired neutrons
-                                 for each 2D array slice
+        - label (list)         : description of particles fired; appears in
+                                 plot legend
     Kwargs:
-        - fs (int)             : size of graph (shape will always be square)
+        - coord (None/str)     : name of the coordinate under analysis;
+                                 takes values of 'x', 'y', 'z'
+        - title (None/str)     : title of plot
+        - xlabel (None/str)    : horizontal axis label
+        - ylabel (None/str)    : vertical axis label
+        - fs (int)             : size of plot (shape will always be square)
         - ms (int)             : size of data points
-        - loc (str/int)        : location of the graph legend; 1 is upper
+        - loc (str/int)        : location of the plot legend; 1 is upper
                                  right, 5 is middle right, 9 is top middle
         - fonts (int)          : font size of legend
         - colors (list)        : color of points and error bars for a
@@ -589,19 +598,21 @@ def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8,
     else:
         cs = plt.cm.Set1(np.linspace(0, 1, medians.shape[0]))
     
-#    colors = plt.cm.Set1(np.linspace(0, 1, medians.shape[0]))  # change the
-#                                                # color scheme here if you like
-    
     plt.figure(figsize=(fs,fs))
-    plt.title('Median Hit Energy vs Median {}-Coordinates'.format(coord.upper()), size=20)
-    plt.xlabel('median {}-coordinates of hit (mm)'.format(coord), size=18)
-    plt.ylabel('median energy of hit (MeV)', size=18)
+    if coord!=None:
+        plt.title('Median Hit Energy vs Median {}-Coordinates'.format(coord.upper()), size=20)
+        plt.xlabel('median {}-coordinates of hit [mm]'.format(coord.lower()), size=18)
+        plt.ylabel('median energy of hit [MeV]', size=18)
+    else:
+        plt.title(title, size=20)
+        plt.xlabel(xlabel, size=18)
+        plt.ylabel(ylabel, size=18)
     
     for i in range(medians.shape[0]):
         plt.errorbar(medians[i,:,0], medians[i,:,1], xerr=q_lows[i,:,0],
                      yerr=q_lows[i,:,1], uplims=True, xuplims=True,
-                     marker='o', ms=ms, label='{} GeV'.format(energies[i]),
-                     lw=0, elinewidth=2, color=cs[i])
+                     marker='o', ms=ms, label=labels[i], lw=0, elinewidth=2,
+                     color=cs[i])
         plt.errorbar(medians[i,:,0], medians[i,:,1], xerr=q_highs[i,:,0],
                      yerr=q_highs[i,:,1], lolims=True, xlolims=True,
                      marker='o', ms=ms, lw=0, elinewidth=2, color=cs[i])
@@ -609,4 +620,74 @@ def ms_qs_graph(medians, q_lows, q_highs, coord, energies, fs=12, ms=8,
     plt.legend(loc=loc, fontsize=fonts)
     plt.show()
 
+
+
+def prof_plot(x, energy, labels, bins=None, nbins=15, low=0.16, high=0.84,
+              coord=None, title=None, xlabel=None, ylabel=None, fs=12, ms=8,
+              loc='best', fonts=20, colors=None):
+    '''
+    Graphs profile plots including the binned median and quantile ranges for
+    the horizontal and vertical variables
     
+    Inputs:
+        - x (list)     : each element is a 1D array that contains the
+                         horizontal axis
+        - energy (list): each element is a 1D array that contains the vertical
+                         axis
+        - labels (list): description of particles fired; appears in graph
+                         legend
+    Kwargs:
+        - bins (array) : desired bin divisions; if None, uses calc_bins_multi
+                         with nbins bins
+        - nbins (int)  : number of bin divisions
+        - low (float)  : lower percentile for quantile range; in interval [0,1]
+        - high (float) : higher percentile for quantile range; in interval
+                         [0,1]
+        - coord (str)  : name of the coordinate under analysis;
+                         takes values of 'x', 'y', 'z'
+        - title (str)  : title of plot
+        - xlabel (str) : horizontal axis label
+        - ylabel (str) : vertical axis label
+        - fs (int)     : size of plot (shape will always be square)
+        - ms (int)     : size of data points
+        - loc (str/int): location of the plot legend; 1 is upper right, 5 is
+                         middle right, 9 is top middle
+        - fonts (int)  : font size of legend
+        - colors (list): color of points and error bars for a particular
+                         dataset
+        
+    Outputs:
+        - matplotlib scatterplot of median values for the horizontal and
+          vertical variables, along with their respective quantiles, for each
+          horizontal bin
+    '''
+    xenergy = [0.]*len(x)
+    for i in range(len(x)):
+        xenergy[i] = np.zeros((x[i].size, 2), dtype='float')
+        xenergy[i][:,0] = x[i]
+        xenergy[i][:,1] = energy[i]
+
+    if type(bins)==type(None):
+        b = calc_bins_multi(x, nbins=nbins)
+    else:
+        b = bins
+
+    meds = np.zeros((len(x), b.size-1, 2), dtype='float')
+    qlows = np.zeros((len(x), b.size-1, 2), dtype='float')
+    qhighs = np.zeros((len(x), b.size-1, 2), dtype='float')
+
+    for i in range(len(x)):
+        meds[i], qlows[i], qhighs[i] = ms_and_qs(xenergy[i], b, low=low,
+                                                 high=high)
+
+    ms_qs_graph(meds, qlows, qhighs, labels, coord=coord, title=title,
+                xlabel=xlabel, ylabel=ylabel, fs=fs, ms=ms, loc=loc,
+                fonts=fonts, colors=colors)
+        
+    
+    
+    
+
+
+
+
