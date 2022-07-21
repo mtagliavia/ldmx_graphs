@@ -1,7 +1,7 @@
 '''
-This is where my graphing functions will go. I will import these functions into
-the documents I use to analyze the simulation data. This file includes the
-functions in graph_functions.py.
+This is where my statistical, processing, and graphing functions will go. I
+will import these functions into the documents I use to analyze the simulation
+data. This file includes the functions in graph_functions.py.
 '''
 
 import copy
@@ -36,7 +36,6 @@ def hist1(x, title, label, size=(10,10), nbins=25, xlabel=None, ylabel=None,
     '''
     plt.figure(figsize=size)
     h, bins = np.histogram(x, bins=nbins)
-#    xxx = plt.axes(xlabel=xlabel, ylabel=ylabel, title=title)
     plt.title(title, size=20)
     plt.xlabel(xlabel, size=18)
     plt.ylabel(ylabel, size=18)
@@ -215,56 +214,11 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
                 hmin[i][j] = min(hl[j], hr[j])
                 hmax[i][j] = max(hl[j], hr[j])
         for k in range(len(xs)):
-            plt.vlines(nb[k], hmin[k], hmax[k], colors=cs[k], alpha=a[i], linewidth=2)
-                
-#        for i in range(len(xs)):
-#            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=1,
-#                         edgecolor=cs[i], linewidth=2, fill=False,
-#                         cumulative=cumulative)
-#            h_list_left = list(h[0])
-#            h_list_left.append(0)
-#            h_list_right = list(h[0][::-1])
-#            h_list_right.append(0)
-#            hl = np.array(h_list_left)
-#            hr = np.array(h_list_right)[::-1]
-#            hh = np.zeros(hl.size, dtype='float')
-#            for j in range(hh.size):
-#                hh[j] = min(hl[j], hr[j])
-#            plt.vlines(nb[i], 0, hh, colors='white', alpha=1, linewidth=2)
+            plt.vlines(nb[k], hmin[k], hmax[k], colors=cs[k], alpha=a[k], linewidth=2)
     else:
         for i in range(len(xs)):
             h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=a[i],
                          color=cs[i], fill=True, cumulative=cumulative)
-                         
-                         
-#    for i in range(len(xs)):
-#        if edge==True:
-##            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=1,
-##                         edgecolor=cs[i], linewidth=2, fill=False,
-##                         cumulative=cumulative)
-##            hlist = list(h[0])
-##            hlist.append(0)
-##            h = np.array(hlist)
-##            print(h, h.size, type(h), type(h[0]))
-##            print()
-##            plt.vlines(nb[i], 0, h, colors='white', alpha=1, linewidth=2)
-#
-#            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=1,
-#                         edgecolor=cs[i], linewidth=2, fill=False,
-#                         cumulative=cumulative)
-#            h_list_left = list(h[0])
-#            h_list_left.append(0)
-#            h_list_right = list(h[0][::-1])
-#            h_list_right.append(0)
-#            hl = np.array(h_list_left)
-#            hr = np.array(h_list_right)[::-1]
-#            hh = np.zeros(hl.size, dtype='float')
-#            for j in range(hh.size):
-#                hh[j] = min(hl[j], hr[j])
-#            plt.vlines(nb[i], 0, hh, colors='white', alpha=1, linewidth=2)
-#        else:
-#            h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=a[i],
-#                         color=cs[i], fill=True, cumulative=cumulative)
     
     plt.title(title, size=24)
     plt.xlabel(xlabel, size=20)
@@ -315,6 +269,7 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
     if misc==True:
         print('Length: {}'.format(x.size))
         print('Median: {}'.format(np.median(x)))
+        print('Mean: {}'.format(np.mean(x)))
         print('Standard deviation: {}'.format(np.std(x)))
         print()
         print()
@@ -384,10 +339,6 @@ def calc_bins_multi(alist, nbins=15):
     
     for i in range(len(alist)):
         h, bins[i] = np.histogram(alist[i], bins=nbins)
-        
-#    for i in range(bins.shape[0]):
-#        if bins[i,0]==bins[:,0].min() and bins[i,-1]==bins[:,-1].max():
-#            return bins[i]
             
     bmin = np.where(bins==bins.min())
     bmax = np.where(bins==bins.max())
@@ -411,13 +362,18 @@ def calc_bins_multi(alist, nbins=15):
     
     
 '''
-These are the functions needed to graph the 2D scatterplot of binned medians
-for hit energies and hit positions (also in graph_functions.py).
+The following three functions were the original functions needed to graph the
+2D scatterplot of binned medians for hit energies and hit positions (also in
+graph_functions.py). These functions have been rendered combinatorially
+obsolete by prof_plot, which combines their functionality for better ease of
+coding. However, these functions still have their individual value and can be
+used by themselves to aid in other processes.
 '''
 
 def calc_bins(a1, a2, nbins=15):
     '''
-    Returns the bins to be used in the 2D scatterplot
+    Returns the bins to be used in the 2D scatterplot. Rendered obsolete by
+    calc_bins_multi.
     
     Inputs:
         - a1 (numpy array)    : coordinate array for first neutron energy
@@ -559,18 +515,21 @@ def ms_and_qs(xy, bins, low=0.16, high=0.84):
 
 def ms_qs_graph(medians, q_lows, q_highs, labels, coord=None, title=None,
                 xlabel=None, ylabel=None, fs=12, ms=8, loc='best', fonts=20,
-                colors=None):
+                colors=None, cross=None):
     '''
     Graphs the medians and quantiles as returned from the function
     ms_and_qs
     
     Inputs:
         - medians (numpy array): 3D array where each 2D slice
-                                 is the first output from ms_and_qs
+                                 is the binned medians (first output from
+                                 ms_and_qs)
         - q_lows (numpy array) : 3D array where each 2D slice
-                                 is the second output from ms_and_qs
+                                 is the binned lower quantile (second output
+                                 from ms_and_qs)
         - q_highs (numpy array): 3D array where each 2D slice
-                                 is the third output from ms_and_qs
+                                 is the binned upper quantile (third output
+                                 from ms_and_qs)
         - label (list)         : description of particles fired; appears in
                                  plot legend
     Kwargs:
@@ -586,6 +545,8 @@ def ms_qs_graph(medians, q_lows, q_highs, labels, coord=None, title=None,
         - fonts (int)          : font size of legend
         - colors (list)        : color of points and error bars for a
                                  particular dataset
+        - cross (numpy array)  : 3D array where each 2D slice is the binned
+                                 means
                        
     Outputs:
         - matplotlib scatterplot of median positions and energies,
@@ -609,13 +570,13 @@ def ms_qs_graph(medians, q_lows, q_highs, labels, coord=None, title=None,
         plt.ylabel(ylabel, size=18)
     
     for i in range(medians.shape[0]):
-        plt.errorbar(medians[i,:,0], medians[i,:,1], xerr=q_lows[i,:,0],
-                     yerr=q_lows[i,:,1], uplims=True, xuplims=True,
+        plt.errorbar(medians[i,:,0], medians[i,:,1], xerr=[q_lows[i,:,0],q_highs[i,:,0]],
+                     yerr=[q_lows[i,:,1],q_highs[i,:,1]], capsize=6,
                      marker='o', ms=ms, label=labels[i], lw=0, elinewidth=2,
                      color=cs[i])
-        plt.errorbar(medians[i,:,0], medians[i,:,1], xerr=q_highs[i,:,0],
-                     yerr=q_highs[i,:,1], lolims=True, xlolims=True,
-                     marker='o', ms=ms, lw=0, elinewidth=2, color=cs[i])
+        if type(cross)!=type(None):
+            plt.scatter(cross[i,:,0], cross[i,:,1], marker='x', s=ms*10,
+                        label='{} mean'.format(labels[i]), color=cs[i])
         
     plt.legend(loc=loc, fontsize=fonts)
     plt.show()
@@ -683,11 +644,83 @@ def prof_plot(x, energy, labels, bins=None, nbins=15, low=0.16, high=0.84,
     ms_qs_graph(meds, qlows, qhighs, labels, coord=coord, title=title,
                 xlabel=xlabel, ylabel=ylabel, fs=fs, ms=ms, loc=loc,
                 fonts=fonts, colors=colors)
+
+
+
+def make_3d(y, x='layer'):
+    '''
+    Makes a 3d numpy array from the inputs where each layer has structure
+    (x[i], y[i]) and each row has structure (x[i,j], y[i,j])
+    
+    Inputs:
+        - y (list):   : contains the arrays that will be used for the vertical
+                        axis of the graph
+    Kwargs:
+        - x (list/str): either contains the arrays that will be used for the
+                        horizontal axis of the graph or names the variable
+                        kind desired
+                    
+    Returns:
+        - out (array) : aformentioned 3D numpy array
+    '''
+    out = np.zeros((len(y), y[0].size, 2), dtype='float')
+    
+    if x=='layer':
+        hori = np.linspace(0, y[0].size-1, y[0].size) + 1
+        vert = np.linspace(0, 1, len(y))
+        x, _ = np.meshgrid(hori, vert)
+    elif x=='q':
+        x = np.zeros((len(y), y[0].size), dtype='float')
+    
+    for i in range(len(x)):
+        out[i,:,0] = x[i]
+        out[i,:,1] = y[i]
         
+    return out
+
+
+
+def prof_prep(bes, low=0.16, high=0.84):
+    '''
+    Prepares the desired binenergy arrays to be used as inputs in the graphing
+    function ms_qs_graph
+     - Finds the binned medians, lower and upper quantiles, and means of each
+       input array
+     - Acquires these same statistics appropriate for the horizontal axis and
+       puts both into 3D arrays
     
+    Inputs:
+        - bes (list)           : contains binenergy arrays
+    Kwargs:
+        - low (float on [0,1]) : lower quartile
+        - high (float on [0,1]): upper quartile
+        
+    Returns:
+        - meds (numpy array)   : 3D array where each 2D slice is the binned
+                                 medians
+        - qlows (numpy array)  : 3D array where each 2D slice is the binned
+                                 lower quantile
+        - qhighs (numpy array) : 3D array where each 2D slice is the binned
+                                 upper quantile
+        - means (numpy array)  : 3D array where each 2D slice is the binned
+                                 means
+    '''
+    medians = []
+    lowquan = []
+    highquan = []
+    avgs = []
     
+    for be in bes:
+        lq = np.quantile(be, low, axis=0)
+        hq = np.quantile(be, high, axis=0)
+        medians.append(np.median(be, axis=0))
+        lowquan.append(np.median(be, axis=0) - lq)
+        highquan.append(hq - np.median(be, axis=0))
+        avgs.append(np.mean(be, axis=0))
+        
+    meds = make_3d(medians)
+    qlows = make_3d(lowquan, x='q')
+    qhighs = make_3d(highquan, x='q')
+    means = make_3d(avgs)
     
-
-
-
-
+    return meds, qlows, qhighs, means
