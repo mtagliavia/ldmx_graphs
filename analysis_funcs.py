@@ -121,7 +121,7 @@ def scatter_multi(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
     if colors != None:
         cs = colors
     else:
-        cs = plt.cm.Set1(np.linspace(0, 1, len(x)))
+        cs = plt.cm.tab10(np.linspace(0, 1, len(x)))
         
     plt.figure(figsize=size)
     for i in range(len(x)):
@@ -139,35 +139,36 @@ def scatter_multi(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
     
 def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
           edge=True, xlabel=None, ylabel=None, xlim=(None,None),
-          yscale='linear', loc='best', fs=20, cumulative=0):
+          yscale='linear', loc='best', fs=20, cumulative=0, density=False):
     '''
     This function graphs many histograms on the same plot.
     
     Inputs:
-        - xs (2D array)      : 2D numpy array where each element is one
-                               dataset to be histogrammed
-        - title (str)        : title of graph
-        - label (list)       : description of particles fired; appears in
-                               graph legend
+        - xs (2D array)     : 2D numpy array where each element is one
+                              dataset to be histogrammed
+        - title (str)       : title of graph
+        - label (list)      : description of particles fired; appears in
+                              graph legend
     Kwargs:
-        - size (tuple)       : figure size of graph produced
-        - nbins (int/array)  : number of bins in each histogram; can
-                               'customize' for each individual histogram; can
-                               use output of calc_bins function
-        - alpha (float/array): opacity of histogram bars; can 'customize' for
-                               each individual histogram
-        - colors (array)     : color of each histogram; can 'customize' for
-                               each individual histogram
-        - edge (bool)        : whether to graph edges or fill histogram bins
-        - xlabel (str)       : x-axis label
-        - ylabel (str)       : y-axis label
-        - xlim (tuple)       : range of x-values to display in the graph
-        - yscale (str)       : how to scale the values in each bin
-        - loc (str/int)      : location of the graph legend; 1 is upper right,
-                               5 is middle right, 9 is top middle
-        - fs (int)           : font size of legend
-        - cumulative (int)   : set equal to 1/-1 to graph integral/1-integral
-                               of graph
+        - size (tuple)      : figure size of graph produced
+        - nbins (int/array) : number of bins in each histogram; can
+                              'customize' for each individual histogram; can
+                              use output of calc_bins function
+        - alpha (float/list): opacity of histogram bars; can 'customize' for
+                              each individual histogram
+        - colors (array)    : color of each histogram; can 'customize' for
+                              each individual histogram
+        - edge (bool)       : whether to graph edges or fill histogram bins
+        - xlabel (str)      : x-axis label
+        - ylabel (str)      : y-axis label
+        - xlim (tuple)      : range of x-values to display in the graph
+        - yscale (str)      : how to scale the values in each bin
+        - loc (str/int)     : location of the graph legend; 1 is upper right,
+                              5 is middle right, 9 is top middle
+        - fs (int)          : font size of legend
+        - cumulative (int)  : set equal to 1/-1 to graph integral/1-integral
+                              of graph
+        - density (bool)    : makes the area under the histogram equal to one
         
     Returns:
         - a matplotlib.pyplot graph of many histograms
@@ -192,7 +193,7 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
     if colors != None:
         cs = colors
     else:
-        cs = plt.cm.Set1(np.linspace(0, 1, len(xs)))
+        cs = plt.cm.tab10(np.linspace(0, 1, len(xs)))
     
     plt.figure(figsize=size)
     
@@ -202,8 +203,9 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
         for i in range(len(xs)):
             h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=a[i],
                          edgecolor=cs[i], linewidth=2, fill=False,
-                         cumulative=cumulative)
-            plt.vlines(nb[i], 0, h[0].max(), colors='white', alpha=1, linewidth=2)
+                         cumulative=cumulative, density=density)
+            plt.vlines(nb[i], 0, h[0].max(), colors='white', alpha=1,
+                       linewidth=2)
             h_list_left = list(h[0])
             h_list_left.append(0)
             h_list_right = list(h[0][::-1])
@@ -214,11 +216,13 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
                 hmin[i][j] = min(hl[j], hr[j])
                 hmax[i][j] = max(hl[j], hr[j])
         for k in range(len(xs)):
-            plt.vlines(nb[k], hmin[k], hmax[k], colors=cs[k], alpha=a[k], linewidth=2)
+            plt.vlines(nb[k], hmin[k], hmax[k], colors=cs[k], alpha=a[k],
+                       linewidth=2)
     else:
         for i in range(len(xs)):
             h = plt.hist(xs[i], bins=nb[i], label=labels[i], alpha=a[i],
-                         color=cs[i], fill=True, cumulative=cumulative)
+                         color=cs[i], fill=True, cumulative=cumulative,
+                         density=density)
     
     plt.title(title, size=24)
     plt.xlabel(xlabel, size=20)
@@ -231,7 +235,7 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
     
     
 def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
-                    minlim=None, maxlim=None, nextlowest=0, nexthighest=0):
+          minlim=None, maxlim=None, nextlowest=0, nexthighest=0, show=False):
     '''
     This function prints out important statistics that give a better sense of
     the distribution.
@@ -253,6 +257,8 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
                              be shown and enumerated
         - nexthighest (int): the (n+1)-highest value in the distribution will
                              be shown and enumerated
+        - show (bool)      : whether or not to show maxlim/minlim arrays with
+                             len>75
         
     Prints:
         - Many strings containing statements about the distribution
@@ -291,7 +297,7 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
             print('Number of elements below {}: {}'.format(minlim,
                                                             x[x<minlim].size))
             print('Corresponding percentile: {}'.format(x[x<minlim].size / x.size))
-            if x[x<minlim].size <= 75:
+            if x[x<minlim].size <= 75 or show==True:
                 print('Array of elements below {}: {}'.format(minlim,
                                                 np.sort(x[x<minlim])[::-1]))
             print()
@@ -314,7 +320,7 @@ def stats(x, label=None, misc=False, mins=False, maxs=False, alll=False,
             print('Number of elements above {}: {}'.format(maxlim,
                                                             x[x>maxlim].size))
             print('Corresponding percentile: {}'.format(x[x<maxlim].size / x.size))
-            if x[x<maxlim].size <= 75:
+            if x[x<maxlim].size <= 75 or show==True:
                 print('Array of elements above {}: {}'.format(maxlim,
                                                         np.sort(x[x>maxlim])))
             print()
@@ -515,7 +521,8 @@ def ms_and_qs(xy, bins, low=0.16, high=0.84):
 
 def ms_qs_graph(medians, q_lows, q_highs, labels, coord=None, title=None,
                 xlabel=None, ylabel=None, fs=12, ms=8, loc='best', fonts=20,
-                colors=None, cross=None):
+                colors=None, cross=None, xlim=(None,None), ylim=(None,None),
+                alpha=1.0):
     '''
     Graphs the medians and quantiles as returned from the function
     ms_and_qs
@@ -547,6 +554,12 @@ def ms_qs_graph(medians, q_lows, q_highs, labels, coord=None, title=None,
                                  particular dataset
         - cross (numpy array)  : 3D array where each 2D slice is the binned
                                  means
+        - xlim (tuple)         : range of horizontal axis values to display in
+                                 the graph
+        - ylim (tuple)         : range of vertical axis values to display in
+                                 the graph
+        - alpha (float/list)   : opacity of points and errorbars; can
+                                 'customize' for each individual dataset
                        
     Outputs:
         - matplotlib scatterplot of median positions and energies,
@@ -557,12 +570,19 @@ def ms_qs_graph(medians, q_lows, q_highs, labels, coord=None, title=None,
     if colors != None:
         cs = colors
     else:
-        cs = plt.cm.Set1(np.linspace(0, 1, medians.shape[0]))
+        cs = plt.cm.tab10(np.linspace(0, 1, medians.shape[0]))
+        
+    if type(alpha)==float:
+        a = np.ones(len(medians))*alpha
+    else:
+        a = alpha
     
     plt.figure(figsize=(fs,fs))
     if coord!=None:
-        plt.title('Median Hit Energy vs Median {}-Coordinates'.format(coord.upper()), size=20)
-        plt.xlabel('median {}-coordinates of hit [mm]'.format(coord.lower()), size=18)
+        plt.title('Median Hit Energy vs Median {}-Coordinates'.format(coord.upper()),
+                  size=20)
+        plt.xlabel('median {}-coordinates of hit [mm]'.format(coord.lower()),
+                    size=18)
         plt.ylabel('median energy of hit [MeV]', size=18)
     else:
         plt.title(title, size=20)
@@ -570,22 +590,26 @@ def ms_qs_graph(medians, q_lows, q_highs, labels, coord=None, title=None,
         plt.ylabel(ylabel, size=18)
     
     for i in range(medians.shape[0]):
-        plt.errorbar(medians[i,:,0], medians[i,:,1], xerr=[q_lows[i,:,0],q_highs[i,:,0]],
-                     yerr=[q_lows[i,:,1],q_highs[i,:,1]], capsize=6,
-                     marker='o', ms=ms, label=labels[i], lw=0, elinewidth=2,
-                     color=cs[i])
+        plt.errorbar(medians[i,:,0], medians[i,:,1], xerr=[q_lows[i,:,0],
+                     q_highs[i,:,0]], yerr=[q_lows[i,:,1],q_highs[i,:,1]],
+                     capsize=6, marker='o', ms=ms, label=labels[i], lw=0,
+                     elinewidth=2, color=cs[i], alpha=a[i])
         if type(cross)!=type(None):
             plt.scatter(cross[i,:,0], cross[i,:,1], marker='x', s=ms*10,
-                        label='{} mean'.format(labels[i]), color=cs[i])
+                        label='{} mean'.format(labels[i]), color=cs[i],
+                        alpha=a[i])
         
     plt.legend(loc=loc, fontsize=fonts)
+    plt.xlim(xlim)
+    plt.ylim(ylim)
     plt.show()
 
 
 
 def prof_plot(x, energy, labels, bins=None, nbins=15, low=0.16, high=0.84,
               coord=None, title=None, xlabel=None, ylabel=None, fs=12, ms=8,
-              loc='best', fonts=20, colors=None):
+              loc='best', fonts=20, colors=None, xlim=(None,None),
+              ylim=(None,None), alpha=1.0):
     '''
     Graphs profile plots including the binned median and quantile ranges for
     the horizontal and vertical variables
@@ -616,6 +640,10 @@ def prof_plot(x, energy, labels, bins=None, nbins=15, low=0.16, high=0.84,
         - fonts (int)  : font size of legend
         - colors (list): color of points and error bars for a particular
                          dataset
+        - xlim (tuple) : range of horizontal axis values to display in
+                         the graph
+        - ylim (tuple) : range of vertical axis values to display in
+                         the graph
         
     Outputs:
         - matplotlib scatterplot of median values for the horizontal and
@@ -643,7 +671,8 @@ def prof_plot(x, energy, labels, bins=None, nbins=15, low=0.16, high=0.84,
 
     ms_qs_graph(meds, qlows, qhighs, labels, coord=coord, title=title,
                 xlabel=xlabel, ylabel=ylabel, fs=fs, ms=ms, loc=loc,
-                fonts=fonts, colors=colors)
+                fonts=fonts, colors=colors, xlim=xlim, ylim=ylim,
+                alpha=alpha)
 
 
 
