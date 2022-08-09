@@ -11,7 +11,8 @@ import numpy as np
 
 
 def hist1(x, title, label, size=(10,10), nbins=25, xlabel=None, ylabel=None,
-          xlim=(None,None), yscale='linear', loc='best', fs=20):
+          xlim=(None,None), xscale='linear', yscale='linear', loc='best',
+          fs=20):
     '''
     This function produces a 1D histogram of the input data.
     
@@ -26,6 +27,7 @@ def hist1(x, title, label, size=(10,10), nbins=25, xlabel=None, ylabel=None,
         - xlabel (str) : x-axis label
         - ylabel (str) : y-axis label
         - xlim (tuple) : range of x-values to display in the graph
+        - xscale (str) : how to scale the range of values the histogram spans
         - yscale (str) : how to scale the values in each bin
         - loc (str/int): location of the graph legend; 1 is upper right, 5 is
                          middle right, 9 is top middle
@@ -41,6 +43,7 @@ def hist1(x, title, label, size=(10,10), nbins=25, xlabel=None, ylabel=None,
     plt.ylabel(ylabel, size=18)
     hep.histplot(h, bins, label=label)
     plt.xlim(xlim)
+    plt.xscale(xscale)
     plt.yscale(yscale)
     plt.legend(loc=loc, fontsize=fs)
     plt.show()
@@ -49,33 +52,36 @@ def hist1(x, title, label, size=(10,10), nbins=25, xlabel=None, ylabel=None,
     
 def scatter1(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
              xlim=(None,None), ylim=(None,None), yscale='linear', loc='best',
-             fs=18):
+             fs=18, connect=False):
     '''
     This function produces a 2D scatterplot of the input data.
     
     Inputs:
-        - x (1D array) : numpy array that contains the horizontal coordinates
-        - y (1D array) : numpy array that contains the vertical coordinates
-        - title (str)  : title of graph
-        - xlabel (str) : x-axis label
-        - ylabel (str) : y-axis label
-        - label (str)  : description of particles fired; appears in graph
-                         legend
+        - x (1D array)  : numpy array that contains the horizontal coordinates
+        - y (1D array)  : numpy array that contains the vertical coordinates
+        - title (str)   : title of graph
+        - xlabel (str)  : x-axis label
+        - ylabel (str)  : y-axis label
+        - label (str)   : description of particles fired; appears in graph
+                          legend
     Kwargs:
-        - size (tuple) : figure size of graph produced
-        - s (float)    : size of points graphed
-        - xlim (tuple) : range of x-values to display in the graph
-        - ylim (tuple) : range of y-values to display in the graph
-        - yscale (str) : how to scale the values in each bin
-        - loc (str/int): location of the graph legend; 1 is upper right, 5 is
-                         middle right, 9 is top middle
-        - fs (int)     : font size of legend
+        - size (tuple)  : figure size of graph produced
+        - s (float)     : size of points graphed
+        - xlim (tuple)  : range of x-values to display in the graph
+        - ylim (tuple)  : range of y-values to display in the graph
+        - yscale (str)  : how to scale the values in each bin
+        - loc (str/int) : location of the graph legend; 1 is upper right, 5 is
+                          middle right, 9 is top middle
+        - fs (int)      : font size of legend
+        - connect (bool): whether to connect the points with line segments
         
     Returns:
         - a matplotlib.pyplot scatterplot
     '''
     plt.figure(figsize=size)
     plt.scatter(x, y, s=s, label=label)
+    if connect==True:
+        plt.plot(x, y, lw=2)
     plt.title(title, size=20)
     plt.xlabel(xlabel, size=18)
     plt.ylabel(ylabel, size=18)
@@ -89,43 +95,48 @@ def scatter1(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
 
 def scatter_multi(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
                   xlim=(None,None), ylim=(None,None), yscale='linear',
-                  loc='best', fs=18, colors=None):
+                  loc='best', fs=18, colors='tab10', connect=False):
     '''
     This function produces a 2D scatterplot of input data from multiple
     datasets.
     
     Inputs:
-        - x (list)     : contains 1D numpy arrays that contain the horizontal
-                         coordinates
-        - y (list)     : contains 1D numpy arrays that contain the vertical
-                         coordinates
-        - title (str)  : title of graph
-        - xlabel (str) : x-axis label
-        - ylabel (str) : y-axis label
-        - label (list) : description of particles fired; appears in graph
-                         legend
+        - x (list)      : contains 1D numpy arrays that contain the horizontal
+                          coordinates
+        - y (list)      : contains 1D numpy arrays that contain the vertical
+                          coordinates
+        - title (str)   : title of graph
+        - xlabel (str)  : x-axis label
+        - ylabel (str)  : y-axis label
+        - label (list)  : description of particles fired; appears in graph
+                          legend
     Kwargs:
-        - size (tuple) : figure size of graph produced
-        - s (float)    : size of points graphed
-        - xlim (tuple) : range of x-values to display in the graph
-        - ylim (tuple) : range of y-values to display in the graph
-        - yscale (str) : how to scale the values in each bin
-        - loc (str/int): location of the graph legend; 1 is upper right, 5 is
-                         middle right, 9 is top middle
-        - fs (int)     : font size of legend
-        - colors (list): colors of datasets in plot
+        - size (tuple)  : figure size of graph produced
+        - s (float)     : size of points graphed
+        - xlim (tuple)  : range of x-values to display in the graph
+        - ylim (tuple)  : range of y-values to display in the graph
+        - yscale (str)  : how to scale the values in each bin
+        - loc (str/int) : location of the graph legend; 1 is upper right, 5 is
+                          middle right, 9 is top middle
+        - fs (int)      : font size of legend
+        - colors (list) : colors of datasets in plot
+        - connect (bool): whether to connect the points in each dataset with
+                          line segments
         
     Returns:
         - a matplotlib.pyplot scatterplot
     '''
-    if colors != None:
+    if str(type(colors)) != "<class 'str'>":
         cs = colors
     else:
-        cs = plt.cm.tab10(np.linspace(0, 1, len(x)))
+        cs = plt.get_cmap(colors)(np.linspace(0, 1, len(x)))
         
     plt.figure(figsize=size)
     for i in range(len(x)):
         plt.scatter(x[i], y[i], s=s, label=label[i], color=cs[i])
+    if connect==True:
+        for i in range(len(x)):
+            plt.plot(x[i], y[i], lw=2, color=cs[i])
     plt.title(title, size=20)
     plt.xlabel(xlabel, size=18)
     plt.ylabel(ylabel, size=18)
@@ -133,13 +144,14 @@ def scatter_multi(x, y, title, xlabel, ylabel, label, size=(10,10), s=1,
     plt.ylim(ylim)
     plt.yscale(yscale)
     plt.legend(loc=loc, fontsize=fs)
+    
     plt.show()
 
     
     
-def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
-          edge=True, xlabel=None, ylabel=None, xlim=(None,None),
-          yscale='linear', loc='best', fs=20, cumulative=0, density=False):
+def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, loc='best',
+          edge=True, xlabel=None, ylabel=None, xlim=(None,None), fs=20,
+          yscale='linear', colors='tab10', cumulative=0, density=False):
     '''
     This function graphs many histograms on the same plot.
     
@@ -190,10 +202,15 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, colors=None,
     else:
         a = alpha
         
-    if colors != None:
+#    if colors != None:
+#        cs = colors
+#    else:
+#        cs = plt.cm.tab10(np.linspace(0, 1, len(xs)))
+
+    if str(type(colors)) != "<class 'str'>":
         cs = colors
     else:
-        cs = plt.cm.tab10(np.linspace(0, 1, len(xs)))
+        cs = plt.get_cmap(colors)(np.linspace(0, 1, len(xs)))
     
     plt.figure(figsize=size)
     
@@ -521,7 +538,7 @@ def ms_and_qs(xy, bins, low=0.16, high=0.84):
 
 def ms_qs_graph(medians, q_lows, q_highs, labels, coord=None, title=None,
                 xlabel=None, ylabel=None, fs=12, ms=8, loc='best', fonts=20,
-                colors=None, cross=None, xlim=(None,None), ylim=(None,None),
+                colors='tab10', cross=None, xlim=(None,None), ylim=(None,None),
                 alpha=1.0):
     '''
     Graphs the medians and quantiles as returned from the function
@@ -566,11 +583,11 @@ def ms_qs_graph(medians, q_lows, q_highs, labels, coord=None, title=None,
           along with their respective quantiles, for each position
           bin
     '''
-    
-    if colors != None:
+        
+    if str(type(colors)) != "<class 'str'>":
         cs = colors
     else:
-        cs = plt.cm.tab10(np.linspace(0, 1, medians.shape[0]))
+        cs = plt.get_cmap(colors)(np.linspace(0, 1, medians.shape[0]))
         
     if type(alpha)==float:
         a = np.ones(len(medians))*alpha
@@ -608,7 +625,7 @@ def ms_qs_graph(medians, q_lows, q_highs, labels, coord=None, title=None,
 
 def prof_plot(x, energy, labels, bins=None, nbins=15, low=0.16, high=0.84,
               coord=None, title=None, xlabel=None, ylabel=None, fs=12, ms=8,
-              loc='best', fonts=20, colors=None, xlim=(None,None),
+              loc='best', fonts=20, colors='tab10', xlim=(None,None),
               ylim=(None,None), alpha=1.0):
     '''
     Graphs profile plots including the binned median and quantile ranges for
