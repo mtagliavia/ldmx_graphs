@@ -186,7 +186,9 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, loc='best',
         - a matplotlib.pyplot graph of many histograms
     '''
     if type(nbins)==int:
-        nb = np.ones(len(xs), dtype='int')*nbins
+        x = np.linspace(np.array(xs).min(), np.array(xs).max(), nbins)
+        y = np.linspace(0, 1, len(xs))
+        nb, _ = np.meshgrid(x,y)
     elif len(nbins)!=len(xs):
         nb = np.zeros((len(xs), nbins.size), dtype='float')
         for i in range(nb.shape[0]):
