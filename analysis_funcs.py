@@ -186,7 +186,13 @@ def hists(xs, title, labels, size=(10,10), nbins=25, alpha=0.6, loc='best',
         - a matplotlib.pyplot graph of many histograms
     '''
     if type(nbins)==int:
-        x = np.linspace(np.array(xs).min(), np.array(xs).max(), nbins)
+        mins = []
+        maxs = []
+        for i in range(len(xs)):
+            mins.append(xs[i].min())
+            maxs.append(xs[i].max())
+        x = np.linspace(min(mins), max(maxs), nbins)
+#        x = np.linspace(np.array(xs).min(), np.array(xs).max(), nbins)
         y = np.linspace(0, 1, len(xs))
         nb, _ = np.meshgrid(x,y)
     elif len(nbins)!=len(xs):
@@ -449,7 +455,7 @@ def calc_bins(a1, a2, nbins=15):
 
 def ms_and_qs(xy, bins, low=0.16, high=0.84):
     '''
-    Calculates median and middle "68% quantile" for each bin of the 2D
+    Calculates median and middle "68th percentile" for each bin of the 2D
     array containing (coordinates, hit energies)
     (Can also calculate other quantile ranges)
     
